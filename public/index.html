@@ -1,48 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tulsi Mobiles - Review</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tulsi Mobiles - Customer Review</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Tulsi Mobiles</h1>
-  <form id="reviewForm">
-    <label>Review:</label><br/>
-    <textarea name="review" required></textarea><br/>
+  <div class="container">
+    <h1>Tulsi Mobiles</h1>
 
-    <label>Rating:</label><br/>
-    <select name="rating" required>
-      <option value="5">★★★★★</option>
-      <option value="4">★★★★</option>
-      <option value="3">★★★</option>
-      <option value="2">★★</option>
-      <option value="1">★</option>
-    </select><br/>
+    <form id="review-form">
+      <label for="review">Review</label>
+      <textarea id="review" name="review" required></textarea>
 
-    <label>Name:</label><br/>
-    <input type="text" name="name" required><br/>
+      <label for="rating">Rating</label>
+      <div class="stars" id="stars">
+        <span data-value="1">&#9733;</span>
+        <span data-value="2">&#9733;</span>
+        <span data-value="3">&#9733;</span>
+        <span data-value="4">&#9733;</span>
+        <span data-value="5">&#9733;</span>
+      </div>
 
-    <label>Mobile Number:</label><br/>
-    <input type="tel" name="mobile" required><br/>
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required/>
 
-    <label>Address:</label><br/>
-    <input type="text" name="address"><br/>
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" id="mobile" name="mobile" required/>
 
-    <button type="submit">SUBMIT</button>
-  </form>
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" required/>
+
+      <input type="hidden" id="rating-value" name="rating" value="0"/>
+      <button type="submit">Submit Review</button>
+    </form>
+  </div>
 
   <script>
-    document.getElementById('reviewForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(this));
-      const response = await fetch('/api/review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    const stars = document.querySelectorAll('#stars span');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach((star, index) => {
+      star.addEventListener('click', () => {
+        ratingInput.value = index + 1;
+        updateStars(index);
       });
-      const result = await response.json();
-      alert(result.message);
-      this.reset();
+    });
+
+    function updateStars(index) {
+      stars.forEach((star, i) => {
+        star.classList.toggle('active', i <= index);
+      });
+    }
+
+    document.getElementById('review-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        review: document.getElementById('review').value,
+        rating: ratingInput.value,
+        name: document.getElementById('name').value,
+        mobile: document.getElementById('mobile').value,
+        address: document.getElementById('address').value,
+      };
+
+      const res = await fetch('/submit-review', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        alert('Thank you for your feedback!');
+        document.getElementById('review-form').reset();
+        updateStars(-1);
+      } else {
+        alert('Failed to submit review. Please try again.');
+      }
     });
   </script>
 </body>
