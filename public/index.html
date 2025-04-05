@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tulsi Mobiles - Review</title>
+</head>
+<body>
+  <h1>Tulsi Mobiles</h1>
+  <form id="reviewForm">
+    <label>Review:</label><br/>
+    <textarea name="review" required></textarea><br/>
+
+    <label>Rating:</label><br/>
+    <select name="rating" required>
+      <option value="5">★★★★★</option>
+      <option value="4">★★★★</option>
+      <option value="3">★★★</option>
+      <option value="2">★★</option>
+      <option value="1">★</option>
+    </select><br/>
+
+    <label>Name:</label><br/>
+    <input type="text" name="name" required><br/>
+
+    <label>Mobile Number:</label><br/>
+    <input type="tel" name="mobile" required><br/>
+
+    <label>Address:</label><br/>
+    <input type="text" name="address"><br/>
+
+    <button type="submit">SUBMIT</button>
+  </form>
+
+  <script>
+    document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      const response = await fetch('/api/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      alert(result.message);
+      this.reset();
+    });
+  </script>
+</body>
+</html>
